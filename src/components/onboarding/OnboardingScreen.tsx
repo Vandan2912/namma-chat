@@ -1,13 +1,11 @@
 "use client";
-import { AppDispatch } from "@/store/store";
-import { updateThemeReducer } from "@/store/theme-slice";
+import { useTopBarColour } from "@/hooks/useTopBarColour";
 import { OnboardingSlide } from "@/types/onboarding";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { GiSoundWaves } from "react-icons/gi";
 import { IoCloudDoneSharp } from "react-icons/io5";
-import { useDispatch } from "react-redux";
 
 const slides: OnboardingSlide[] = [
   {
@@ -38,11 +36,7 @@ const slides: OnboardingSlide[] = [
 
 const OnboardingScreen = ({ onFinish }: { onFinish: () => void }) => {
   const [step, setStep] = useState(1);
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    dispatch(updateThemeReducer("#E2E5E6"));
-  }, [dispatch]);
+  useTopBarColour("#E2E5E6");
 
   return (
     <div className="bg-[#E2E5E6] font-noto">

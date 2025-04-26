@@ -1,33 +1,7 @@
 "use client";
-import OnboardingScreen from "@/components/onboarding/OnboardingScreen";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-    if (typeof window !== "undefined") {
-      const hasSeen = localStorage.getItem("hasSeenOnboarding");
-      setShowOnboarding(!hasSeen);
-    }
-  }, []);
-
-  const handleFinishOnboarding = () => {
-    localStorage.setItem("hasSeenOnboarding", "true");
-    setShowOnboarding(false);
-  };
-
-  if (!isMounted) {
-    return null; // Prevent SSR mismatch
-  }
-
-  if (showOnboarding) {
-    return <OnboardingScreen onFinish={handleFinishOnboarding} />; // Prevent SSR mismatch
-  }
-
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">

@@ -4,6 +4,7 @@ import Head from "next/head";
 import ThemeColorUpdater from "@/components/ThemeColorUpdater";
 import ProviderComponent from "@/context/Provider";
 import { Metadata, Viewport } from "next";
+import { AuthProvider } from "@/context/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,10 +47,12 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}>
-        <ProviderComponent>
-          <ThemeColorUpdater />
-          {children}
-        </ProviderComponent>
+        <AuthProvider>
+          <ProviderComponent>
+            <ThemeColorUpdater />
+            {children}
+          </ProviderComponent>
+        </AuthProvider>
       </body>
     </html>
   );
