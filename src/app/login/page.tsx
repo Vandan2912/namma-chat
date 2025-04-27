@@ -57,35 +57,33 @@ export default function LoginPage() {
     return null; // Prevent SSR mismatch
   }
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      {step === 1 && (
-        <>
-          <input
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="Enter phone number"
-            className="border p-2 mb-2"
-          />
-          <button onClick={requestOtp} className="bg-blue-500 text-white p-2 rounded">
-            Send OTP
-          </button>
-        </>
-      )}
-
-      {step === 2 && (
-        <>
-          <input
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            placeholder="Enter OTP"
-            className="border p-2 mb-2"
-          />
-          <button onClick={verifyOtp} className="bg-green-500 text-white p-2 rounded">
-            Verify OTP
-          </button>
-        </>
-      )}
-    </div>
-  );
+  return <div className="flex flex-col items-center justify-center min-h-screen"></div>;
 }
+
+// {step === 1 && (
+//   <>
+//     <input
+//       value={phoneNumber}
+//       onChange={(e) => setPhoneNumber(e.target.value)}
+//       placeholder="Enter phone number"
+//       className="border p-2 mb-2"
+//     />
+//     <button onClick={requestOtp} className="bg-blue-500 text-white p-2 rounded">
+//       Send OTP
+//     </button>
+//   </>
+// )}
+
+// {step === 2 && (
+//   <>
+//     <input
+//       value={otp}
+//       onChange={(e) => setOtp(e.target.value)}
+//       placeholder="Enter OTP"
+//       className="border p-2 mb-2"
+//     />
+//     <button onClick={verifyOtp} className="bg-green-500 text-white p-2 rounded">
+//       Verify OTP
+//     </button>
+//   </>
+// )}
