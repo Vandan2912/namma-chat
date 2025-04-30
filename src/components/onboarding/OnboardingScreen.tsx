@@ -44,7 +44,7 @@ const OnboardingScreen = ({ onFinish }: { onFinish: () => void }) => {
         {slides.map((_, index) => (
           <div
             key={index}
-            className={`w-2 h-2 rounded-full ${step === index + 1 ? "bg-blue-500" : "bg-gray-300"} mx-1`}
+            className={`w-2 h-2 rounded-full mt-2 ${step === index + 1 ? "bg-primary" : "bg-gray-300"} mx-1`}
           ></div>
         ))}
       </div>
