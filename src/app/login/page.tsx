@@ -1,14 +1,19 @@
 "use client";
 
+import { AuthService } from "@/api/auth.service";
 import { MobileInput } from "@/components/MobileInput";
 import OnboardingScreen from "@/components/onboarding/OnboardingScreen";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
 import { useTopBarColour } from "@/hooks/useTopBarColour";
+import { axiosInstance } from "@/lib/axiosInstance";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 export default function LoginPage() {
   useTopBarColour("#96498d");
+  const route = useRouter();
   const [step, setStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
@@ -23,26 +28,27 @@ export default function LoginPage() {
       return;
     }
 
-    await fetch("/api/auth/request-otp", {
-      method: "POST",
-      body: JSON.stringify({ phoneNumber }),
-      headers: { "Content-Type": "application/json" },
+    await AuthService.getOtp({ phone: phoneNumber }).then((res) => {
+      console.log("res", res);
+      if (res) {
+        setStep(2);
+      }
     });
-    setStep(2);
   }
 
   async function verifyOtp() {
-    const res = await fetch("/api/auth/verify-otp", {
-      method: "POST",
-      body: JSON.stringify({ phoneNumber, otp }),
-      headers: { "Content-Type": "application/json" },
+    await AuthService.verifyOtp({ phone: phoneNumber, otp }).then((res) => {
+      console.log("res", res);
+      if (res && res?.success === false) {
+        if (res?.message) alert(res?.message);
+        return;
+      }
+      if (res && res?.token) {
+        setStep(2);
+        Cookies.set("accessToken", res?.token);
+        route.push("/");
+      }
     });
-
-    if (res.ok) {
-      window.location.href = "/dashboard";
-    } else {
-      alert("Invalid OTP");
-    }
   }
 
   useEffect(() => {
@@ -83,10 +89,11 @@ export default function LoginPage() {
 
         <div className="bottom-0 rounded-t-3xl w-full flex-1 p-8 bg-white rounded-lg shadow-md">
           <div className="">
-            <h2 className="text-xl font-[900] mb-10">Enter your phone number</h2>
+            {step === 1 && <h2 className="text-xl font-[900] mb-10">Enter your phone number</h2>}
+            {step === 2 && <h2 className="text-xl font-[900] mb-10">Enter the OTP sent to your phone</h2>}
             {step === 1 && (
               <>
-                <MobileInput value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                <MobileInput value={phoneNumber} onChange={(e) => setPhoneNumber(e)} />
                 <button onClick={requestOtp} className="bg-primary text-white w-full px-8 py-2 rounded-full mt-3">
                   Send OTP
                 </button>
@@ -94,7 +101,13 @@ export default function LoginPage() {
             )}
             {step === 2 && (
               <>
-                <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} value={otp} onChange={(value) => setOtp(value)}>
+                <InputOTP
+                  maxLength={6}
+                  pattern={REGEXP_ONLY_DIGITS}
+                  value={otp}
+                  onChange={(value) => setOtp(value)}
+                  containerClassName="!my-4"
+                >
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />

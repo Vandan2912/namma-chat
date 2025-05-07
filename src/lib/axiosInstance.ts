@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://api.example.com", // your real backend URL
-  withCredentials: true, // important to send cookies
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL, // your real backend URL
+  // withCredentials: true, // important to send cookies
 });
 
 // Optional: Add interceptors for automatic error handling

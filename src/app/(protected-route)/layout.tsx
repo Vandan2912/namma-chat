@@ -17,7 +17,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   return (
     <>
-      {(loading || !user || true) && <FullScreenLoader />}
+      {(loading || !user) && <FullScreenLoader />}
       {children}
     </>
   );
