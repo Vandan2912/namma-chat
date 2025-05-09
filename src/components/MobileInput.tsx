@@ -30,7 +30,7 @@ export function MobileInput({ value, onChange }: { value: string; onChange: (e: 
         inputMode="numeric"
         maxLength={10}
         placeholder="Phone number"
-        className="!border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+        className="!border-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-white !rounded-full"
       />
     </div>
   );

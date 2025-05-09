@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [step, setStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
+  const [loader, setLoader] = useState(false);
 
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -28,27 +29,39 @@ export default function LoginPage() {
       return;
     }
 
-    await AuthService.getOtp({ phone: phoneNumber }).then((res) => {
-      console.log("res", res);
-      if (res) {
-        setStep(2);
-      }
-    });
+    setLoader(true);
+    await AuthService.getOtp({ phone: phoneNumber })
+      .then((res) => {
+        if (res) {
+          setStep(2);
+        }
+        setLoader(false);
+      })
+      .catch((err) => {
+        console.error("error : ", err);
+        setLoader(false);
+      });
   }
 
   async function verifyOtp() {
-    await AuthService.verifyOtp({ phone: phoneNumber, otp }).then((res) => {
-      console.log("res", res);
-      if (res && res?.success === false) {
-        if (res?.message) alert(res?.message);
-        return;
-      }
-      if (res && res?.token) {
-        setStep(2);
-        Cookies.set("accessToken", res?.token);
-        route.push("/");
-      }
-    });
+    setLoader(true);
+    await AuthService.verifyOtp({ phone: phoneNumber, otp })
+      .then((res) => {
+        if (res && res?.success === false) {
+          if (res?.message) alert(res?.message);
+          return;
+        }
+        if (res && res?.token) {
+          setStep(2);
+          Cookies.set("accessToken", res?.token);
+          route.push("/");
+        }
+        setLoader(false);
+      })
+      .catch((err) => {
+        console.error("error : ", err);
+        setLoader(false);
+      });
   }
 
   useEffect(() => {
@@ -81,8 +94,7 @@ export default function LoginPage() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-        }}
-      >
+        }}>
         <div className="flex-1 flex justify-end items-center">
           <h2 className="text-5xl font-[900] my-10 mx-6 text-white">Welcome to Namma Chat 👋</h2>
         </div>
@@ -94,8 +106,29 @@ export default function LoginPage() {
             {step === 1 && (
               <>
                 <MobileInput value={phoneNumber} onChange={(e) => setPhoneNumber(e)} />
-                <button onClick={requestOtp} className="bg-primary text-white w-full px-8 py-2 rounded-full mt-3">
-                  Send OTP
+                <button
+                  onClick={requestOtp}
+                  className="bg-primary text-white w-full px-8 py-2 rounded-full mt-3"
+                  disabled={loader}
+                  style={{
+                    width: "100%",
+                    height: "50px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                  {loader ? (
+                    <div className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin h-5 w-5 mr-3 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {loader ? "Sending..." : "Send OTP"}
                 </button>
               </>
             )}
@@ -106,8 +139,7 @@ export default function LoginPage() {
                   pattern={REGEXP_ONLY_DIGITS}
                   value={otp}
                   onChange={(value) => setOtp(value)}
-                  containerClassName="!my-4"
-                >
+                  containerClassName="!my-4">
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />
@@ -121,8 +153,29 @@ export default function LoginPage() {
                   </InputOTPGroup>
                 </InputOTP>
 
-                <button onClick={verifyOtp} className="bg-primary text-white px-8 py-4 rounded-full">
-                  Verify OTP
+                <button
+                  onClick={verifyOtp}
+                  className="bg-primary text-white px-8 py-4 rounded-full"
+                  disabled={loader}
+                  style={{
+                    width: "100%",
+                    height: "50px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                  {loader ? (
+                    <div className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin h-5 w-5 mr-3 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {loader ? "Verifying..." : "Verify OTP"}
                 </button>
               </>
             )}
