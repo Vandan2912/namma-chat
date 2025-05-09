@@ -8,8 +8,10 @@ import { useTopBarColour } from "@/hooks/useTopBarColour";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
+import { Loader2 } from "lucide-react";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function LoginPage() {
   useTopBarColour("#96498d");
@@ -18,9 +20,14 @@ export default function LoginPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [loader, setLoader] = useState(false);
+  const [timer, setTimer] = useState(30);
+  const [resendDisabled, setResendDisabled] = useState(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  const { login } = useAuth();
 
   async function requestOtp() {
     // validate number
@@ -54,6 +61,7 @@ export default function LoginPage() {
         if (res && res?.token) {
           setStep(2);
           Cookies.set("accessToken", res?.token);
+          login(res?.token);
           route.push("/");
         }
         setLoader(false);
@@ -71,6 +79,49 @@ export default function LoginPage() {
       setShowOnboarding(!hasSeen);
     }
   }, []);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer <= 1) {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current as NodeJS.Timeout);
+          }
+          setResendDisabled(false);
+          return 0;
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (intervalRef.current !== null) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current as NodeJS.Timeout);
+        }
+      }
+    };
+  }, []);
+
+  const handleResend = () => {
+    if (!resendDisabled) {
+      requestOtp();
+      setTimer(30);
+      setResendDisabled(true);
+      intervalRef.current = setInterval(() => {
+        setTimer((prevTimer) => {
+          if (prevTimer <= 1) {
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current as NodeJS.Timeout);
+            }
+            setResendDisabled(false);
+            return 0;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
+    }
+  };
 
   const handleFinishOnboarding = () => {
     localStorage.setItem("hasSeenOnboarding", "true");
@@ -94,7 +145,8 @@ export default function LoginPage() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-        }}>
+        }}
+      >
         <div className="flex-1 flex justify-end items-center">
           <h2 className="text-5xl font-[900] my-10 mx-6 text-white">Welcome to Namma Chat 👋</h2>
         </div>
@@ -116,42 +168,52 @@ export default function LoginPage() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}>
-                  {loader ? (
-                    <div className="flex items-center justify-center">
-                      <svg
-                        className="animate-spin h-5 w-5 mr-3 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                      />
-                    </div>
-                  ) : (
-                    ""
-                  )}
+                  }}
+                >
+                  {loader ? <Loader2 className="animate-spin mr-2" /> : ""}
                   {loader ? "Sending..." : "Send OTP"}
                 </button>
               </>
             )}
             {step === 2 && (
               <>
+                {/* phone number display with wrong number ?  */}
+                <div className="text-sm text-gray-500 mb-4 text-center">
+                  <span className="font-bold">+91 {phoneNumber}</span>.{" "}
+                  <button onClick={() => setStep(1)} className="text-sm text-primary">
+                    Wrong number?
+                  </button>
+                </div>
                 <InputOTP
                   maxLength={6}
                   pattern={REGEXP_ONLY_DIGITS}
                   value={otp}
                   onChange={(value) => setOtp(value)}
-                  containerClassName="!my-4">
+                  containerClassName="!my-4 !flex !justify-center !items-center"
+                >
                   <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                  </InputOTPGroup>
-                  <InputOTPSeparator />
-                  <InputOTPGroup>
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
+                    <InputOTPSlot index={0} className="h-12 w-12" />
+                    <InputOTPSlot index={1} className="h-12 w-12" />
+                    <InputOTPSlot index={2} className="h-12 w-12" />
+                    <InputOTPSlot index={3} className="h-12 w-12" />
+                    <InputOTPSlot index={4} className="h-12 w-12" />
+                    <InputOTPSlot index={5} className="h-12 w-12" />
                   </InputOTPGroup>
                 </InputOTP>
+
+                {/* resend with timer of 30sec */}
+                <div className="text-sm text-gray-500 mb-4 text-center">
+                  {resendDisabled ? (
+                    <p>Resend OTP in {timer} seconds</p>
+                  ) : (
+                    <>
+                      Didn&apos;t receive the OTP?{" "}
+                      <button onClick={handleResend} className="text-sm text-primary" disabled={loader}>
+                        Resend OTP
+                      </button>
+                    </>
+                  )}
+                </div>
 
                 <button
                   onClick={verifyOtp}
@@ -163,18 +225,9 @@ export default function LoginPage() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}>
-                  {loader ? (
-                    <div className="flex items-center justify-center">
-                      <svg
-                        className="animate-spin h-5 w-5 mr-3 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                      />
-                    </div>
-                  ) : (
-                    ""
-                  )}
+                  }}
+                >
+                  {loader ? <Loader2 className="animate-spin mr-2" /> : ""}
                   {loader ? "Verifying..." : "Verify OTP"}
                 </button>
               </>
