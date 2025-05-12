@@ -7,7 +7,7 @@ export const AuthService = {
       const response = await axiosInstance.post(getOTPEndpoint(), {
         phone,
       });
-      return response.data.data;
+      return response.data;
     } catch (err) {
       console.error("error : ", err);
     }

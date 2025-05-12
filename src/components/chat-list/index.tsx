@@ -72,6 +72,31 @@ const chatData = [
     imageUrl:
       "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
+  {
+    id: "8",
+    name: "Jaylon Dias",
+    message: "✓ Buy back 10k gallons, top up credit, b...",
+    time: "02:11",
+    imageUrl:
+      "https://images.pexels.com/photos/697509/pexels-photo-697509.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: "9",
+    name: "Chance Rhiel Madsen",
+    message: "Thank you mate!",
+    time: "02:11",
+    unreadCount: 2,
+    imageUrl:
+      "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: "10",
+    name: "Livia Dias",
+    message: "Last message from Livia",
+    time: "02:11",
+    imageUrl:
+      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
 ];
 
 const ChatItem = ({ name, message, time, unreadCount, imageUrl, index }: ChatItemProps) => {
@@ -80,8 +105,7 @@ const ChatItem = ({ name, message, time, unreadCount, imageUrl, index }: ChatIte
       className="chat-item"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.1 }}
-    >
+      transition={{ duration: 0.3, delay: index * 0.1 }}>
       <div className="chat-avatar">
         <Image src={imageUrl} alt={name} width={56} height={56} className="w-full h-full object-cover" />
       </div>
