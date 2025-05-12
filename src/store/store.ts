@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import themeSlice from "./theme-slice";
+import chatSlice from "./chat-slice";
 
 const store = configureStore({
   reducer: {
     themeSlice,
+    chatSlice,
   },
 });
 

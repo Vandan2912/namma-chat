@@ -52,7 +52,9 @@ export default function RootLayout({
         {/* Preload background image */}
         <link rel="preload" href="/images/login/background.jpg" as="image" />
       </Head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}>
         <AuthProvider>
           <ProviderComponent>
             <ThemeColorUpdater />
