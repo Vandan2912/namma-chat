@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Header from "@/components/header";
 import ChatList from "@/components/chat-list";
-import BottomNavigation from "@/components/bottom-navigation";
 import { useTopBarColour } from "@/hooks/useTopBarColour";
 
 export default function Home() {
