@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthProvider";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   useTopBarColour("#96498d");
@@ -50,12 +51,14 @@ export default function LoginPage() {
       });
   }
 
-  async function verifyOtp() {
+  async function verifyOtp(OTP?: string) {
     setLoader(true);
-    await AuthService.verifyOtp({ phone: phoneNumber, otp })
+    await AuthService.verifyOtp({ phone: phoneNumber, otp: OTP || otp })
       .then((res) => {
         if (res && res?.success === false) {
-          if (res?.message) alert(res?.message);
+          if (res?.message) toast.error(res?.message, { duration: 60000 });
+          // if (res?.message) toaster({ type: "error", message: res?.message });
+          setLoader(false);
           return;
         }
         if (res && res?.token) {
@@ -145,8 +148,7 @@ export default function LoginPage() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-        }}
-      >
+        }}>
         <div className="flex-1 flex justify-end items-center">
           <h2 className="text-5xl font-[900] my-10 mx-6 text-white">Welcome to Namma Chat 👋</h2>
         </div>
@@ -168,8 +170,7 @@ export default function LoginPage() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}
-                >
+                  }}>
                   {loader ? <Loader2 className="animate-spin mr-2" /> : ""}
                   {loader ? "Sending..." : "Send OTP"}
                 </button>
@@ -188,9 +189,13 @@ export default function LoginPage() {
                   maxLength={6}
                   pattern={REGEXP_ONLY_DIGITS}
                   value={otp}
-                  onChange={(value) => setOtp(value)}
-                  containerClassName="!my-4 !flex !justify-center !items-center"
-                >
+                  onChange={(value) => {
+                    setOtp(value);
+                    if (value.length === 6) {
+                      verifyOtp(value);
+                    }
+                  }}
+                  containerClassName="!my-4 !flex !justify-center !items-center">
                   <InputOTPGroup>
                     <InputOTPSlot index={0} className="h-12 w-12" />
                     <InputOTPSlot index={1} className="h-12 w-12" />
@@ -216,7 +221,9 @@ export default function LoginPage() {
                 </div>
 
                 <button
-                  onClick={verifyOtp}
+                  onClick={() => {
+                    verifyOtp();
+                  }}
                   className="bg-primary text-white px-8 py-4 rounded-full"
                   disabled={loader}
                   style={{
@@ -225,8 +232,7 @@ export default function LoginPage() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}
-                >
+                  }}>
                   {loader ? <Loader2 className="animate-spin mr-2" /> : ""}
                   {loader ? "Verifying..." : "Verify OTP"}
                 </button>

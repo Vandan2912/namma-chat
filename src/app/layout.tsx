@@ -5,6 +5,7 @@ import ThemeColorUpdater from "@/components/ThemeColorUpdater";
 import ProviderComponent from "@/context/Provider";
 import { Metadata, Viewport } from "next";
 import { AuthProvider } from "@/context/AuthProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,6 +60,7 @@ export default function RootLayout({
           <ProviderComponent>
             <ThemeColorUpdater />
             {children}
+            <Toaster richColors closeButton theme="light" />
           </ProviderComponent>
         </AuthProvider>
       </body>
