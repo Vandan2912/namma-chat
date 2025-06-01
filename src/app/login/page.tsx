@@ -83,6 +83,8 @@ export default function LoginPage() {
     }
   }, []);
 
+
+
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setTimer((prevTimer) => {
@@ -138,6 +140,8 @@ export default function LoginPage() {
   if (!isMounted) {
     return null; // Prevent SSR mismatch
   }
+
+
 
   return (
     <div className="bg-[#E2E5E6] font-noto">

@@ -2,8 +2,27 @@
 
 import { Home, Plus, User } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 export default function BottomNavigation() {
+
+  // const getContacts = async () => {
+  //   if ('contacts' in navigator && 'ContactsManager' in window) {
+  //     try {
+  //       const props = ['name', 'tel']; // or 'email'
+  //       const opts = { multiple: true };
+  //       const contacts = await (navigator as any).contacts.select(props, opts);
+  //       console.log(contacts, "constnats");
+  //     } catch (error) {
+  //       console.error('Error fetching contacts:', error);
+  //     }
+  //   } else {
+  //     alert('Contacts API not supported on this device/browser');
+  //   }
+  // };
+  // useEffect(() => {
+  //   getContacts();
+  // }, []);
   return (
     <motion.div
       className="h-[60px] fixed w-full bottom-0 z-10 border-t border-[#f5f5f5] bg-white flex items-center justify-between px-4"

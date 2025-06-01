@@ -12,6 +12,7 @@ export default function Home() {
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+  
 
   return (
     <motion.div
