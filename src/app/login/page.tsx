@@ -5,7 +5,6 @@ import { MobileInput } from "@/components/MobileInput";
 import OnboardingScreen from "@/components/onboarding/OnboardingScreen";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
 import { useTopBarColour } from "@/hooks/useTopBarColour";
-import { axiosInstance } from "@/lib/axiosInstance";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -18,6 +17,7 @@ export default function LoginPage() {
   useTopBarColour("#96498d");
   const route = useRouter();
   const [step, setStep] = useState(1);
+  const [dummyOtp, setDummyOtp] = useState<string | null>(null)
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [loader, setLoader] = useState(false);
@@ -43,6 +43,9 @@ export default function LoginPage() {
         if (res) {
           setStep(2);
         }
+        if(res?.data?.otp){
+          setDummyOtp(res?.data?.otp);
+        }
         setLoader(false);
       })
       .catch((err) => {
@@ -64,8 +67,10 @@ export default function LoginPage() {
         if (res && res?.token) {
           setStep(2);
           Cookies.set("accessToken", res?.token);
+          console.log("resvewri", res)
+          setDummyOtp(null)
           login(res?.token);
-          route.push("/");
+          res?.new_user ? route?.push("/import-contacts") : route.push("/");
         }
         setLoader(false);
       })
@@ -189,6 +194,7 @@ export default function LoginPage() {
                     Wrong number?
                   </button>
                 </div>
+                {dummyOtp && <div className="text-center font-bold text-[0.9rem]">OTP : {dummyOtp}</div>}
                 <InputOTP
                   maxLength={6}
                   pattern={REGEXP_ONLY_DIGITS}
