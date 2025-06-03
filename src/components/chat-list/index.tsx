@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChatItem from "./chat-item";
 import { IChatList } from "@/types/chat-list.interface";
 import FullScreenLoader from "../loader/FullScreenLoader";
+import { UserService } from "@/api/user.service";
+import { get } from "http";
 
 // const chatData = [
 //   {
@@ -91,13 +93,49 @@ import FullScreenLoader from "../loader/FullScreenLoader";
 // ];
 
 export default function ChatList() {
-  const [chatList, setChatList] = useState<IChatList[]>([]);
+  const [chatList, setChatList] = useState<{
+    loading: boolean;
+    data: IChatList[];
+    error: string | null;
+  }>({
+    loading: false,
+    data: [],
+    error: null,
+  });
   const [loader, setLoader] = useState(false);
+
+  const getChatList = async () => {
+    try {
+      setChatList((prev) => ({ ...prev, loading: true }));
+      let response = await UserService?.getChatList()
+      console.log("Chat List Response:", response);
+      if (response && response.data) {
+        setChatList((prev) => ({
+          ...prev,
+          data: response.data,
+          loading: false,
+        }));
+      } else {
+        setChatList((prev) => ({
+          ...prev,
+          error: "Failed to fetch chat list",
+          loading: false,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching chat list:", error);
+      setChatList((prev) => ({ ...prev, loading: false }));
+
+    }
+  }
+  useEffect(() => {
+    getChatList();
+  }, [])
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {loader && <FullScreenLoader opacity={0.8} />}
-      {chatList.map((chat, index) => (
+      {chatList?.loading && <FullScreenLoader opacity={0.8} />}
+      {chatList?.data?.map((chat, index) => (
         <ChatItem key={chat.id} {...chat} index={index} />
       ))}
     </div>

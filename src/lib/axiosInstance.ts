@@ -1,4 +1,6 @@
 import axios from "axios";
+import Cookies from "js-cookie";
+
 
 export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL, // your real backend URL
@@ -16,7 +18,8 @@ axiosInstance.interceptors.response.use(
 );
 // Optional: Add interceptors for adding auth token if needed
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
+  const token = Cookies.get("accessToken");
+  console.log(token, "tonme")
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

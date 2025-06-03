@@ -10,5 +10,12 @@ export const UserService = {
       console.error("error : ", err);
     }
   },
-
+  getChatList: async () => {
+    try {
+      const response = await axiosInstance.get(getUserInfoEndpoint());
+      return response.data;
+    } catch (err) {
+      console.error("error : ", err);
+    }
+  },
 };
